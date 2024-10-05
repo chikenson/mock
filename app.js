@@ -1,3 +1,5 @@
+const crypto = require('crypto-js');
+
 const express = require('express')
 const app = express()
 const port = 4444
@@ -5,10 +7,13 @@ const port = 4444
 const responseBody = {
     request_id: "ab3d89e4-3231-11ed-a261-0242ac120002"
 }
-const responseHeaders = {}
+
+const signKey = "signatureKey"
+const dateNow = Date.now();
+const sign = signatureGenerator()
 app.post('/debit/authorize', (req, res) => {
-    res.header("x-signature", "fe845227b2a12803948a2ea3da136a16b05e7fbefb429012c5483b5cf7ce5643ef1211287b977a29afbd6d7d67aaec6eb2ac1ddc348e5a5bf04832b548acfbcb");
-    res.header('x-date', '1728038932096')
+    res.header("x-signature", sign);
+    res.header('x-date', dateNow)
     res.header('content-type', 'application/json')
     res.json(responseBody)
 })
@@ -16,3 +21,22 @@ app.post('/debit/authorize', (req, res) => {
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
 })
+
+// Function for generating Signature with possibility to turn-off x-date and x-signature
+function signatureGenerator(
+    ts = dateNow,
+    bodyRequest = responseBody,
+    signatureApiKey = signKey
+) {
+    let msg = '';
+    let header = {};
+
+    if (bodyRequest) {
+        msg = JSON.stringify(bodyRequest);
+    }
+
+    msg += ts;
+    const hmac = crypto.HmacSHA512(msg, signatureApiKey);
+    const encodedMsg = hmac.toString();
+    return encodedMsg;
+}
