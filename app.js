@@ -16,6 +16,7 @@ app.post('/debit/authorize', (req, res) => {
     res.header('x-date', dateNow)
     res.header('content-type', 'application/json')
     res.json(responseBody)
+    console.log('Request to "/debit/authorize"')
 })
 
 app.listen(port, () => {
