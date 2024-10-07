@@ -16,7 +16,12 @@ app.post('/debit/authorize', (req, res) => {
     res.header('x-date', dateNow)
     res.header('content-type', 'application/json')
     res.json(responseBody)
-    console.log('Request to "/debit/authorize"')
+    console.log('Request POST to "/debit/authorize"')
+})
+
+app.get('/', (req, res) => {
+    res.send('Hello world!');
+    console.log('Request GET to "/"')
 })
 
 app.listen(port, () => {
